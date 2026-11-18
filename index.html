@@ -146,6 +146,19 @@
   }
   #chat-box{flex:1 1 auto;min-height:0;width:100%}
   #chat-box iframe{border:0;width:100%!important;height:100%!important}
+  /* ===== 扣子聊天组件强制纯白底：覆盖 Semi Design 浅灰背景变量，不影响消息气泡 ===== */
+  #chat-box{
+    background:#fff !important;
+    --semi-color-bg-0:#ffffff;
+    --semi-color-bg-1:#ffffff;
+    --semi-color-bg-2:#ffffff;
+    --semi-color-bg-3:#ffffff;
+    --semi-color-bg-4:#ffffff;
+    --semi-color-fill-0:#f7f8fa;
+    --semi-color-fill-1:#f0f2f5;
+  }
+  #chat-box > div,
+  #chat-box > div > div{ background:#fff !important; }
   /* ========== 手机端适配：防止 logo 圆环与卡片内容被裁切 ========== */
   @media (max-width:520px){
     .landing{
