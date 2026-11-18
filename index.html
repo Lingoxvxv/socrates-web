@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>苏格拉底启思导学智能体</title>
+<link rel="icon" href="logo.png">
+<style>
+  :root{
+    /* 莫兰迪低饱和浅蓝：雾霾蓝 + 墨蓝灰 + 冷白 */
+    --m-grad:linear-gradient(135deg,#AEC4D6 0%,#8CA6BE 55%,#7C97B1 100%);
+    --m-grad-soft:linear-gradient(135deg,#C3D4E1 0%,#9DB8CE 100%);
+    --ink:#3F4D5C;
+    --gray:#8B98A5;
+    --line:#E6EBF0;
+    --bg:#F3F6F8;
+    --pink:#C2A2A7; --pink-soft:#DBC4C8; --pink-bg:#F3E9EB;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",sans-serif;
+    color:var(--ink);overflow:hidden;
+    background:linear-gradient(160deg,#D6E3F2 0%,#E2E2F3 50%,#E7DDF2 100%);
+  }
+  .view{position:fixed;inset:0;transition:opacity .35s ease,transform .35s ease}
+  .view.hidden{opacity:0;transform:scale(1.02);pointer-events:none;visibility:hidden}
+
+  /* ========== 欢迎页（莫兰迪：冷白底 + 极淡柔光斑 + 白卡片） ========== */
+  #landing{
+    display:flex;align-items:center;justify-content:center;padding:24px;
+    background:
+      radial-gradient(1200px 720px at 16% 10%, rgba(255,255,255,.65), transparent 60%),
+      radial-gradient(1000px 680px at 86% 90%, rgba(178,168,214,.20), transparent 62%),
+      linear-gradient(160deg,#D6E3F2 0%,#E2E2F3 50%,#E7DDF2 100%);
+    overflow:hidden;
+  }
+  .blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+  .blob.b1{width:420px;height:420px;background:#FFFFFF;top:-150px;left:-110px;opacity:.8;filter:blur(95px)}
+  .blob.b2{width:380px;height:380px;background:#E8E1F8;bottom:-140px;right:-90px;opacity:.75;filter:blur(95px)}
+  .blob.b3{width:230px;height:230px;background:#E6D5DA;bottom:10%;left:9%;opacity:.4}
+  .card{
+    position:relative;z-index:2;width:min(480px,94vw);margin-top:52px;
+    background:linear-gradient(135deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,.30) 100%);
+    border:1px solid rgba(255,255,255,.65);border-radius:28px;
+    padding:80px 38px 34px;text-align:center;
+    box-shadow:inset 0 1px 1px rgba(255,255,255,.85),
+               inset 0 -1px 2px rgba(255,255,255,.18),
+               0 24px 60px rgba(70,96,124,.16),0 2px 10px rgba(70,96,130,.06);
+    backdrop-filter:blur(28px) saturate(1.25);
+    -webkit-backdrop-filter:blur(28px) saturate(1.25);
+  }
+  /* 玻璃斜向反光层 */
+  .card::before{
+    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
+    background:linear-gradient(150deg,rgba(255,255,255,.45) 0%,rgba(255,255,255,0) 42%);
+  }
+  .card > *:not(.logo-ring){position:relative;z-index:2}
+  /* logo 渐变环（低饱和雾霾蓝） */
+  .logo-ring{
+    position:absolute;top:0;left:50%;transform:translate(-50%,-50%);z-index:5;
+    width:104px;height:104px;border-radius:50%;padding:4px;
+    background:var(--m-grad);box-shadow:0 10px 26px rgba(110,138,166,.30);
+  }
+  .logo-ring .inner{
+    width:100%;height:100%;background:#fff;border-radius:50%;padding:7px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .logo-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+  .kicker{
+    margin-top:20px;font-size:13px;font-weight:700;letter-spacing:3px;color:var(--pink);
+  }
+  .card h1{margin-top:10px;font-size:clamp(21px,4.4vw,27px);line-height:1.5;font-weight:800;
+           color:var(--ink);letter-spacing:.5px}
+  .card .sub{margin-top:12px;font-size:14.5px;line-height:1.8;color:var(--gray)}
+
+  /* 三个场景：低饱和渐变故事圈 */
+  .stories{display:flex;gap:24px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+  .story{display:flex;flex-direction:column;align-items:center;gap:8px;width:84px}
+  /* 玻璃拟态圆钮：半透明白 + 模糊 + 细白边 + 内高光 + 弥散阴影 */
+  .ring{
+    width:78px;height:78px;border-radius:50%;
+    background:rgba(255,255,255,0.4);
+    border:1px solid rgba(255,255,255,0.7);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,.8),
+      inset 0 -1px 2px rgba(255,255,255,.25),
+      inset 0 0 14px rgba(255,255,255,.35),
+      0 8px 24px rgba(86,92,140,.14);
+    transition:transform .22s ease, background .22s ease, box-shadow .22s ease;
+  }
+  .story:hover .ring{
+    transform:translateY(-4px);
+    background:rgba(255,255,255,.6);
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,.9),
+      inset 0 -1px 2px rgba(255,255,255,.28),
+      inset 0 0 16px rgba(255,255,255,.45),
+      0 14px 30px rgba(70,96,124,.18);
+  }
+  .story:hover small{color:var(--pink)}
+  .ring .dot{
+    width:100%;height:100%;background:transparent;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .ring .dot svg{width:33px;height:33px;color:#7C97B1;display:block}
+  .story small{font-size:12px;color:var(--gray);line-height:1.4}
+
+  /* 主按钮：雾霾蓝细腻渐变 */
+  .start-btn{
+    margin-top:30px;width:100%;border:none;cursor:pointer;color:#fff;
+    background:var(--m-grad);font-size:17px;font-weight:700;letter-spacing:2px;
+    padding:16px 0;border-radius:999px;
+    box-shadow:0 12px 28px rgba(110,138,166,.30);
+    transition:transform .15s ease,box-shadow .15s ease;
+  }
+  .start-btn:hover{transform:translateY(-3px);box-shadow:0 18px 36px rgba(110,138,166,.38)}
+  .start-btn:active{transform:translateY(0)}
+  .foot{margin-top:20px;font-size:12px;color:#A6B1BC;line-height:1.7}
+  #sdkWarn{display:none;margin-top:14px;font-size:13px;color:#9C6B6B;line-height:1.6;
+           background:#F6ECEC;border:1px solid #E6D5D5;border-radius:12px;padding:10px 12px}
+
+  /* ========== 聊天页 ========== */
+  #chatStage{display:flex;flex-direction:column;background:#fff}
+  #chatStage.hidden{display:none}
+  .topbar{
+    flex:0 0 auto;display:flex;align-items:center;gap:12px;
+    padding:10px 18px;background:#fff;border-bottom:1px solid var(--line);
+  }
+  .topbar .tb-ring{width:38px;height:38px;border-radius:50%;padding:2.5px;background:var(--m-grad);flex:0 0 auto}
+  .topbar .tb-ring .in{width:100%;height:100%;background:#fff;border-radius:50%;padding:2.5px}
+  .topbar .tb-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+  .topbar b{font-size:16px;color:var(--ink)}
+  .topbar .back{
+    margin-left:auto;border:1px solid #DCE3EA;background:#fff;color:var(--ink);
+    font-size:13.5px;padding:8px 16px;border-radius:999px;cursor:pointer;transition:.15s;
+  }
+  .topbar .back:hover{background:var(--pink-bg)}
+  @media (max-height:740px){
+    .card{margin-top:44px;padding-top:70px}
+    .logo-ring{width:90px;height:90px}
+  }
+  #chat-box{flex:1 1 auto;min-height:0;width:100%}
+  #chat-box iframe{border:0;width:100%!important;height:100%!important}
+</style>
+</head>
+<body>
+
+<!-- 视图一：欢迎页 -->
+<section class="view" id="landing">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="card">
+    <div class="logo-ring"><div class="inner"><img src="logo.png" alt="logo"></div></div>
+    <div class="kicker">SOCRATES GUIDANCE</div>
+    <h1>欢迎来到<br>苏格拉底启思导学智能体</h1>
+    <p class="sub">不直接给答案的大学学习引导师<br>用一步步追问，帮你把题目想通、把论证理顺、把答辩问不倒</p>
+
+    <div class="stories">
+      <div class="story">
+        <div class="ring"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6"/><path d="M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div></div>
+        <small>数理化解题</small>
+      </div>
+      <div class="story">
+        <div class="ring"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></div></div>
+        <small>论文逻辑梳理</small>
+      </div>
+      <div class="story">
+        <div class="ring"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11.5" rx="3"/><path d="M5.5 10.5a6.5 6.5 0 0 0 13 0"/><path d="M12 17v3.5"/><path d="M8.5 20.5h7"/></svg></div></div>
+        <small>答辩辩论模拟</small>
+      </div>
+    </div>
+
+    <button class="start-btn" id="startBtn">开始进入聊天 →</button>
+    <div id="sdkWarn"></div>
+    <div class="foot">苏格拉底说队 · 第三届“讯飞杯”AI+创新应用大赛</div>
+  </div>
+</section>
+
+<!-- 视图二：全屏聊天页 -->
+<section class="view hidden" id="chatStage">
+  <div class="topbar">
+    <div class="tb-ring"><div class="in"><img src="logo.png" alt="logo"></div></div>
+    <b>苏格拉底启思导学智能体</b>
+    <button class="back" id="backBtn">← 返回首页</button>
+  </div>
+  <div id="chat-box"></div>
+</section>
+
+<!-- 版本号以扣子「发布 → Chat SDK」页面给的安装代码为准，不同就整行替换 -->
+<script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.20/libs/cn/index.js"></script>
+<script>
+// ================= 只改这两个值 =================
+const BOT_ID = '7706195892897906728';
+const PAT    = 'pat_OMC88IW0eQtfBzNxot93xNBBkMysXgapwDnrpwDdg5Z8GRq9CjFMFxVyZ70dLdZU';
+// ================================================
+
+const landing  = document.getElementById('landing');
+const stage    = document.getElementById('chatStage');
+const startBtn = document.getElementById('startBtn');
+const backBtn  = document.getElementById('backBtn');
+const warnBox  = document.getElementById('sdkWarn');
+
+let sdk = null;
+if (typeof CozeWebSDK === 'undefined') {
+  warnBox.style.display = 'block';
+  warnBox.textContent = '聊天组件未加载：请检查网络，或将本页 script 地址换成发布页给的最新安装代码。';
+} else {
+  sdk = new CozeWebSDK.WebChatClient({
+    config: { type: 'bot', bot_id: BOT_ID, isIframe: false },
+    auth:   { type: 'token', token: PAT, onRefreshToken: () => PAT },
+    userInfo: { id: 'demo_user_001', nickname: '演示同学' },
+    ui: {
+      base:    { layout: 'pc', lang: 'zh-CN', zIndex: 1000 },
+      header:  { isShow: false },
+      asstBtn: { isNeed: false },
+      chatBot: { el: document.getElementById('chat-box') }
+    }
+  });
+}
+
+startBtn.addEventListener('click', () => {
+  if (!sdk) { warnBox.style.display = 'block'; return; }
+  if (BOT_ID.indexOf('粘贴') !== -1 || PAT.indexOf('粘贴') !== -1) {
+    warnBox.style.display = 'block';
+    warnBox.textContent = '请先在 index.html 开头填入 BOT_ID 和 PAT 两个值，保存后刷新页面。';
+    return;
+  }
+  landing.classList.add('hidden');
+  stage.classList.remove('hidden');
+  try { sdk.showChatBot(); }
+  catch (e) { warnBox.style.display = 'block'; warnBox.textContent = '聊天窗打开失败：' + e.message; }
+});
+
+backBtn.addEventListener('click', () => {
+  try { if (sdk) sdk.hideChatBot(); } catch (e) {}
+  stage.classList.add('hidden');
+  landing.classList.remove('hidden');
+});
+</script>
+</body>
+</html>
