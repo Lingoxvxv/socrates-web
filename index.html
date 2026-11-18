@@ -157,8 +157,11 @@
     --semi-color-fill-0:#f7f8fa;
     --semi-color-fill-1:#f0f2f5;
   }
-  #chat-box > div,
-  #chat-box > div > div{ background:#fff !important; }
+  /* 恢复扣子自带装饰背景图（雾蓝底+插图），仅移除压暗画面的 12% 黑色遮罩 */
+  #chat-box [data-testid="chat.with_rule_img_background"] > div:first-child,
+  #chat-box [data-testid="chat.with_rule_img_background"] [class*="rgba(0,0,0,0.12)"]{
+    background-color: transparent !important;
+  }
   /* ========== 手机端适配：防止 logo 圆环与卡片内容被裁切 ========== */
   @media (max-width:520px){
     .landing{
@@ -245,7 +248,7 @@ if (typeof CozeWebSDK === 'undefined') {
     userInfo: { id: 'demo_user_001', nickname: '演示同学' },
     ui: {
       base:    { layout: 'pc', lang: 'zh-CN', zIndex: 1000 },
-      header:  { isShow: false },
+      header:  { isShow: false, isNeedClose: false },
       asstBtn: { isNeed: false },
       chatBot: { el: document.getElementById('chat-box') }
     }
