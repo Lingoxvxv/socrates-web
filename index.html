@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<script>try{localStorage.setItem("coze-design-theme","light")}catch(e){}</script>
 <title>苏格拉底启思导学智能体</title>
 <link rel="icon" href="logo.png">
 <style>
@@ -223,6 +225,7 @@ if (typeof CozeWebSDK === 'undefined') {
   warnBox.style.display = 'block';
   warnBox.textContent = '聊天组件未加载：请检查网络，或将本页 script 地址换成发布页给的最新安装代码。';
 } else {
+  try { localStorage.setItem('coze-design-theme', 'light'); } catch (e) {}
   sdk = new CozeWebSDK.WebChatClient({
     config: { type: 'bot', bot_id: BOT_ID, isIframe: false },
     auth:   { type: 'token', token: PAT, onRefreshToken: () => PAT },
