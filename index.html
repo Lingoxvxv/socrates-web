@@ -274,5 +274,36 @@ backBtn.addEventListener('click', () => {
   landing.classList.remove('hidden');
 });
 </script>
+<script>
+/* ===== 扣子 CDN 图标裂图兜底：手机网络拦截图床时，自动换本地图标，不影响正常网络下的原图 ===== */
+(function () {
+  var ICON_FALLBACK = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5C7A99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6"/><path d="M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>'
+  );
+  function bindImg(img) {
+    if (!img || img.dataset.cozFixed) return;
+    img.dataset.cozFixed = '1';
+    img.addEventListener('error', function () {
+      if (img.src.indexOf('logo.png') !== -1) return;
+      img.src = (img.src.indexOf('BIZ_BOT_ICON') > -1) ? 'logo.png' : ICON_FALLBACK;
+    }, true);
+    if (img.complete && img.naturalWidth === 0 && img.src.indexOf('logo.png') === -1) {
+      img.src = (img.src.indexOf('BIZ_BOT_ICON') > -1) ? 'logo.png' : ICON_FALLBACK;
+    }
+  }
+  var box = document.getElementById('chat-box');
+  if (!box) return;
+  new MutationObserver(function (muts) {
+    muts.forEach(function (m) {
+      m.addedNodes.forEach(function (n) {
+        if (n.nodeType !== 1) return;
+        if (n.tagName === 'IMG') bindImg(n);
+        if (n.querySelectorAll) n.querySelectorAll('img').forEach(bindImg);
+      });
+    });
+  }).observe(box, { childList: true, subtree: true });
+  box.querySelectorAll('img').forEach(bindImg);
+})();
+</script>
 </body>
 </html>
